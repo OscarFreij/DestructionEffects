@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using CompoundParts;
 using UnityEngine;
 
 namespace DestructionEffects
@@ -109,6 +110,7 @@ namespace DestructionEffects
             if (!partJoint.Host) return false;
             if (partJoint.Target == null) return false;
             if (!partJoint.Target) return false;
+            if (partJoint.joints.All(x => x == null)) return false;
 
             if (partJoint.Parent != null && partJoint.Parent.vessel != null)
             {
@@ -121,6 +123,15 @@ namespace DestructionEffects
             var part = partJoint.Target;//SM edit for DE on ships and ship parts, adding bow, hull, stern, superstructure
 
             if (partJoint.Target.FindModulesImplementing<ModuleDecouple>().Count > 0)
+
+            {
+                return false;
+            }
+            
+            if (partJoint.Target.FindModulesImplementing<CModuleStrut>().Count > 0 ||
+                partJoint.Host.FindModulesImplementing<CModuleStrut>().Count > 0 ||
+                partJoint.Child.FindModulesImplementing<CModuleStrut>().Count > 0 ||
+                partJoint.Parent?.FindModulesImplementing<CModuleStrut>().Count > 0)
 
             {
                 return false;
