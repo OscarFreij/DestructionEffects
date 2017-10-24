@@ -1,3 +1,6 @@
+v1.7
+- Fixes break joints events during physics ease
+
 v1.6
 - Fixes Autostrut issue. Issue #12 and #16
 
