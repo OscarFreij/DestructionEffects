@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.NetworkInformation;
 using CompoundParts;
 using UnityEngine;
 
@@ -11,9 +12,10 @@ namespace DestructionEffects
     {
         private const string NewFlameModelPath = "DestructionEffects/Models/FlameEffect2/model";
         private const string LegacyFlameModelPath = "DestructionEffects/Models/FlameEffect_Legacy/model";
-
+        private float timeNoFlames;
+        private Vessel LastVesselLoaded = null;
         public static List<GameObject> FlameObjects = new List<GameObject>();             
-
+        public List<Vessel> vesselsAllowed = new List<Vessel>();
         private static readonly string[] PartTypesTriggeringUnwantedJointBreakEvents = new string[]
         {
             "decoupler",
@@ -45,13 +47,23 @@ namespace DestructionEffects
         //1553 void OnPartJointBreak(PartJoint j, float breakForce)
         public void Start()
         {
+            GameEvents.onPhysicsEaseStop.Add(OnPhysicsEaseStop);
             GameEvents.onPartJointBreak.Add(OnPartJointBreak);
             PartTypesTriggeringUnwantedJointBreakEvents.CopyTo(_PartTypesTriggeringUnwantedJointBreakEvents,0);
             DESettings.PartIgnoreList.CopyTo(_PartTypesTriggeringUnwantedJointBreakEvents, PartTypesTriggeringUnwantedJointBreakEvents.Length);
         }
 
+        public void OnPhysicsEaseStop(Vessel data)
+        {
+            vesselsAllowed.Add(data);
+        }
+
         public void OnPartJointBreak(PartJoint partJoint, float breakForce)
         {
+            if (HighLogic.LoadedScene == GameScenes.EDITOR)
+            {
+                return;
+            }
             if (partJoint.Target == null)
             {
                 return;
@@ -60,20 +72,19 @@ namespace DestructionEffects
             {
                 return;
             }
-            if (breakForce == float.PositiveInfinity || breakForce < 0)
+
+            if (vesselsAllowed.Count == 0)
             {
-                Debug.Log("DestructionEffects: Not effect due to breaking force negative or infinity");
+                return;
+            }
+            if (!vesselsAllowed.Contains(partJoint.Target.vessel))
+            {
                 return;
             }
             if (!ShouldFlamesBeAttached(partJoint))
             {
                 return;
             }
-            // if part has module missile turret  part.FindModuleImplementing<ModuleMissileTurret>())
-            //  if (GameObject.FindModuleImplementing<ModuleMissileTurret>())
-            // {
-            //     return;
-            //  }
 
             AttachFlames(partJoint);
         }
