@@ -13,6 +13,7 @@ namespace DestructionEffects
         //=======configurable settings
 
         public static bool LegacyEffect = false;
+        public static string[] PartIgnoreList;
 
         void Start()
         {
@@ -31,6 +32,7 @@ namespace DestructionEffects
                 ConfigNode settings = fileNode.GetNode("DESettings");
 
                 LegacyEffect = bool.Parse(settings.GetValue("LegacyEffect"));
+                PartIgnoreList = settings.GetValues("PartIgnoreList");
             }
             catch (NullReferenceException)
             {

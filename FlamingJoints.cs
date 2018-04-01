@@ -1,5 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.NetworkInformation;
+using CompoundParts;
 using UnityEngine;
 
 namespace DestructionEffects
@@ -9,9 +12,11 @@ namespace DestructionEffects
     {
         private const string NewFlameModelPath = "DestructionEffects/Models/FlameEffect2/model";
         private const string LegacyFlameModelPath = "DestructionEffects/Models/FlameEffect_Legacy/model";
-
-        public static List<GameObject> FlameObjects = new List<GameObject>();
-        public static List<string> PartTypesTriggeringUnwantedJointBreakEvents = new List<string>(9)
+        private float timeNoFlames;
+        private Vessel LastVesselLoaded = null;
+        public static List<GameObject> FlameObjects = new List<GameObject>();             
+        public List<Vessel> vesselsAllowed = new List<Vessel>();
+        private static readonly string[] PartTypesTriggeringUnwantedJointBreakEvents = new string[]
         {
             "decoupler",
             "separator",
@@ -23,18 +28,42 @@ namespace DestructionEffects
             "wheel",
             "mast",
             "heatshield",
-            "Turret",
-            "MissileLauncher"
-
+            "turret",
+            "missilelauncher",
+            "moudleturret",
+            "missileturret",
+            "missilefire",
+            "kas.",
+            "kis.",
+            "cport,",
+            "torpedo",
+            "slw",
+            "mortar",
+            "hedg"
         };
+
+        private static readonly string[] _PartTypesTriggeringUnwantedJointBreakEvents = new string[DESettings.PartIgnoreList.Length + PartTypesTriggeringUnwantedJointBreakEvents.Length];
+
         //1553 void OnPartJointBreak(PartJoint j, float breakForce)
         public void Start()
         {
+            GameEvents.onPhysicsEaseStop.Add(OnPhysicsEaseStop);
             GameEvents.onPartJointBreak.Add(OnPartJointBreak);
+            PartTypesTriggeringUnwantedJointBreakEvents.CopyTo(_PartTypesTriggeringUnwantedJointBreakEvents,0);
+            DESettings.PartIgnoreList.CopyTo(_PartTypesTriggeringUnwantedJointBreakEvents, PartTypesTriggeringUnwantedJointBreakEvents.Length);
+        }
+
+        public void OnPhysicsEaseStop(Vessel data)
+        {
+            vesselsAllowed.Add(data);
         }
 
         public void OnPartJointBreak(PartJoint partJoint, float breakForce)
         {
+            if (HighLogic.LoadedScene == GameScenes.EDITOR)
+            {
+                return;
+            }
             if (partJoint.Target == null)
             {
                 return;
@@ -43,20 +72,19 @@ namespace DestructionEffects
             {
                 return;
             }
-            if (breakForce == float.PositiveInfinity || breakForce < 0)
+
+            if (vesselsAllowed.Count == 0)
             {
-                Debug.Log("DestructionEffects: Not effect due to breaking force negative or infinity");
+                return;
+            }
+            if (!vesselsAllowed.Contains(partJoint.Target.vessel))
+            {
                 return;
             }
             if (!ShouldFlamesBeAttached(partJoint))
             {
                 return;
             }
-            // if part has module missile turret  part.FindModuleImplementing<ModuleMissileTurret>())
-            //  if (GameObject.FindModuleImplementing<ModuleMissileTurret>())
-            // {
-            //     return;
-            //  }
 
             AttachFlames(partJoint);
         }
@@ -81,7 +109,6 @@ namespace DestructionEffects
                 if (!pe.useWorldSpace) continue;
 
                 var gpe = pe.gameObject.AddComponent<DeGaplessParticleEmitter>();
-                EffectBehaviour.AddParticleEmitter(gpe.PEmitter);
                 gpe.Part = partJoint.Target;
                 gpe.Emit = true;
             }
@@ -91,10 +118,38 @@ namespace DestructionEffects
         {
             if (partJoint == null) return false;
             if (partJoint.Host == null) return false;
+            if (!partJoint.Host) return false;
             if (partJoint.Target == null) return false;
+            if (!partJoint.Target) return false;
+            if (partJoint.joints.All(x => x == null)) return false;
 
+            if (partJoint.Parent != null && partJoint.Parent.vessel != null)
+            {
+                if (partJoint.Parent.vessel.atmDensity <= 0.1)
+                {
+                    return false;
+                }
+            }
 
-            if (partJoint.Parent != null && partJoint.Parent.vessel.atmDensity < .001f)
+            var part = partJoint.Target;//SM edit for DE on ships and ship parts, adding bow, hull, stern, superstructure
+
+            if (partJoint.Target.FindModulesImplementing<ModuleDecouple>().Count > 0)
+
+            {
+                return false;
+            }
+            
+            if (partJoint.Target.FindModulesImplementing<CModuleStrut>().Count > 0 ||
+                partJoint.Host.FindModulesImplementing<CModuleStrut>().Count > 0 ||
+                partJoint.Child.FindModulesImplementing<CModuleStrut>().Count > 0 ||
+                partJoint.Parent?.FindModulesImplementing<CModuleStrut>().Count > 0)
+
+            {
+                return false;
+            }
+
+            if (partJoint.Target.Modules.Contains("ModuleTurret"))
+
             {
                 return false;
             }
@@ -103,32 +158,35 @@ namespace DestructionEffects
                 return false;
             }
 
-            var part = partJoint.Target;//SM edit for DE on ships and ship parts, adding bow, hull, stern, superstructure
-
-            if (part.partInfo.title.Contains("Wing") || 
-                part.partInfo.title.Contains("Fuselage") || 
-                part.partInfo.title.Contains("Bow") || 
-                part.partInfo.title.Contains("Stern") || 
-                part.partInfo.title.Contains("Hull") || 
-                part.partInfo.title.Contains("Superstructure") || 
-                part.FindModuleImplementing<ModuleEngines>() || 
-                part.FindModuleImplementing<ModuleEnginesFX>())/*|| part.partInfo.title.Contains("Turret") */
+            if (part.Resources
+                .Any(resource => resource.resourceName.Contains("Fuel") ||
+                                 resource.resourceName.Contains("Ox") ||
+                                 resource.resourceName.Contains("Elec") ||
+                                 resource.resourceName.Contains("Amm") ||
+                                 resource.resourceName.Contains("Cann")))
+            {
+                return true;
+            }
+                
+            if (part.partInfo.title.Contains("Wing") ||
+                part.partInfo.title.Contains("Fuselage") ||
+                part.partInfo.title.Contains("Bow") ||
+                part.partInfo.title.Contains("Stern") ||
+                part.partInfo.title.Contains("Hull") ||
+                part.partInfo.title.Contains("Superstructure") ||
+                part.FindModuleImplementing<ModuleEngines>() != null ||
+                part.FindModuleImplementing<ModuleEnginesFX>() != null)/*|| part.partInfo.title.Contains("Turret") */
             {
                 return true;
             }
 
-            return
-                part.Resources//SM edit adding EC Ammo and Cannonshells
-                    .Any(resource => resource.resourceName.Contains("Fuel") || 
-                    resource.resourceName.Contains("Ox") || 
-                    resource.resourceName.Contains("Elec") || 
-                    resource.resourceName.Contains("Amm") || 
-                    resource.resourceName.Contains("Cann"));
+          
+            return false;
         }
 
         private static bool IsPartHostTypeAJointBreakerTrigger(string hostPartName)
         {
-            return PartTypesTriggeringUnwantedJointBreakEvents.Any(x => hostPartName.Contains(x));
+            return _PartTypesTriggeringUnwantedJointBreakEvents.Any(hostPartName.Contains);
         }
     }
 }

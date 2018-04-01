@@ -37,6 +37,7 @@ namespace DestructionEffects
                 if (!(pe.maxEnergy > _highestEnergy)) continue;
                 _destroyer = pe.gameObject;
                 _highestEnergy = pe.maxEnergy;
+                EffectBehaviour.AddParticleEmitter(pe);
             }
             FlamingJoints.FlameObjects.Add(gameObject);
         }
