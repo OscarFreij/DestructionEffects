@@ -230,3 +230,5 @@ $RECYCLE.BIN/
 *.msp
 /.vs/config
 /.vs/DestructionEffects/v15/sqlite3
+/.vs/DestructionEffects/v15/Server/sqlite3
+/BuildRelease
