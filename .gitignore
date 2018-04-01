@@ -229,3 +229,7 @@ $RECYCLE.BIN/
 *.msm
 *.msp
 /.vs/config
+
+# Enviroment files
+LocalDev/
+/.vs/DestructionEffects/v15/Server/sqlite3

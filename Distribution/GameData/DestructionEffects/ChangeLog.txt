@@ -1,3 +1,6 @@
+v1.4
+- Compiled for KSP 1.4.2.
+
 v1.3
 - Compiled for KSP 1.2.2.
 - Fixing some exceptions.
