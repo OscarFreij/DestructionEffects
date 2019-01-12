@@ -85,6 +85,8 @@ namespace DestructionEffects
             {
                 return;
             }
+            if (breakForce == 0)
+                return;
 
             AttachFlames(partJoint);
         }
