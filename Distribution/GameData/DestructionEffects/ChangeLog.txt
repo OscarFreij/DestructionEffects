@@ -1,5 +1,8 @@
+v1.9
+- Compiled for KSP 1.5.1
+
 v1.8
-- Compiled for KSP 1.4.2.
+- Compiled for KSP 1.4.2
 
 v1.7
 - Fixes break joints events during physics ease

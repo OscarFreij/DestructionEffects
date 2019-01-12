@@ -73,18 +73,13 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
-      <HintPath>E:\Steam\steamapps\common\Kerbal Space Program\KSP_x64_Data\Managed\Assembly-CSharp.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>D:\REPOSITORIO\_LocalDev\KSPRefs\Assembly-CSharp.dll</HintPath>
     </Reference>
-    <Reference Include="Assembly-CSharp-firstpass, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>E:\Steam\steamapps\common\Kerbal Space Program\KSP_x64_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="Assembly-CSharp-firstpass">
+      <HintPath>D:\REPOSITORIO\_LocalDev\KSPRefs\Assembly-CSharp-firstpass.dll</HintPath>
     </Reference>
-    <Reference Include="KSPAssets, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>E:\Steam\steamapps\common\Kerbal Space Program\KSP_x64_Data\Managed\KSPAssets.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="KSPAssets">
+      <HintPath>D:\REPOSITORIO\_LocalDev\KSPRefs\KSPAssets.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="UnityEngine">
@@ -97,12 +92,10 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="UnityEngine">
-      <HintPath>G:\GAMES\KERBAL\Kerbal Space Program_DEV_13\KSP_x64_Data\Managed\UnityEngine.dll</HintPath>
+      <HintPath>D:\REPOSITORIO\_LocalDev\KSPRefs\UnityEngine.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.UI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>G:\GAMES\KERBAL\Kerbal Space Program_DEV_13\KSP_x64_Data\Managed\UnityEngine.UI.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>D:\REPOSITORIO\_LocalDev\KSPRefs\UnityEngine.UI.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
