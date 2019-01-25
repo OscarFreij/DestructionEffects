@@ -85,7 +85,7 @@ namespace DestructionEffects
             {
                 return;
             }
-            if (breakForce == 0)
+            if (breakForce == 0 && !BDACheck.bdaAvailable)
                 return;
 
             AttachFlames(partJoint);
