@@ -12,8 +12,8 @@ namespace DestructionEffects
     {
         private const string NewFlameModelPath = "DestructionEffects/Models/FlameEffect2/model";
         private const string LegacyFlameModelPath = "DestructionEffects/Models/FlameEffect_Legacy/model";
-        private float timeNoFlames;
-        private Vessel LastVesselLoaded = null;
+        //private float timeNoFlames;
+        //private Vessel LastVesselLoaded = null;
         public static List<GameObject> FlameObjects = new List<GameObject>();             
         public List<Vessel> vesselsAllowed = new List<Vessel>();
         private static readonly string[] PartTypesTriggeringUnwantedJointBreakEvents = new string[]
@@ -121,9 +121,19 @@ namespace DestructionEffects
             if (partJoint == null) return false;
             if (partJoint.Host == null) return false;
             if (!partJoint.Host) return false;
+            if (partJoint.Host.Modules == null)return false;
+
             if (partJoint.Target == null) return false;
+            if (partJoint.Target.Modules == null) return false;
             if (!partJoint.Target) return false;
+
+            if (partJoint.Child == null) return false;
+            if (partJoint.Child.Modules == null) return false;
+            if (!partJoint.Child) return false;
+
+
             if (partJoint.joints.All(x => x == null)) return false;
+
 
             if (partJoint.Parent != null && partJoint.Parent.vessel != null)
             {
@@ -134,9 +144,8 @@ namespace DestructionEffects
             }
 
             var part = partJoint.Target;//SM edit for DE on ships and ship parts, adding bow, hull, stern, superstructure
-
+       
             if (partJoint.Target.FindModulesImplementing<ModuleDecouple>().Count > 0)
-
             {
                 return false;
             }
@@ -145,16 +154,15 @@ namespace DestructionEffects
                 partJoint.Host.FindModulesImplementing<CModuleStrut>().Count > 0 ||
                 partJoint.Child.FindModulesImplementing<CModuleStrut>().Count > 0 ||
                 partJoint.Parent?.FindModulesImplementing<CModuleStrut>().Count > 0)
-
             {
                 return false;
             }
 
             if (partJoint.Target.Modules.Contains("ModuleTurret"))
-
             {
                 return false;
             }
+;
             if (IsPartHostTypeAJointBreakerTrigger(partJoint.Host.name.ToLower()))
             {
                 return false;
