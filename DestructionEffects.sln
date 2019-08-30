@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27428.2005
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DestructionEffects", "DestructionEffects\DestructionEffects.csproj", "{95AE4D2E-FE17-4B78-A17F-A63F6249B14D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DestructionEffects", "DestructionEffects.csproj", "{7BBA3030-1674-4759-8DEA-2012D86512BC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +11,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{95AE4D2E-FE17-4B78-A17F-A63F6249B14D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{95AE4D2E-FE17-4B78-A17F-A63F6249B14D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{95AE4D2E-FE17-4B78-A17F-A63F6249B14D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{95AE4D2E-FE17-4B78-A17F-A63F6249B14D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7BBA3030-1674-4759-8DEA-2012D86512BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7BBA3030-1674-4759-8DEA-2012D86512BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7BBA3030-1674-4759-8DEA-2012D86512BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7BBA3030-1674-4759-8DEA-2012D86512BC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

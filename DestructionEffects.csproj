@@ -73,37 +73,36 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
-      <HintPath>D:\REPOSITORIO\_LocalDev\KSPRefs\Assembly-CSharp.dll</HintPath>
+      <HintPath>..\_LocalDev\KSPRefs\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp-firstpass">
-      <HintPath>D:\REPOSITORIO\_LocalDev\KSPRefs\Assembly-CSharp-firstpass.dll</HintPath>
+      <HintPath>..\_LocalDev\KSPRefs\Assembly-CSharp-firstpass.dll</HintPath>
     </Reference>
     <Reference Include="KSPAssets">
-      <HintPath>D:\REPOSITORIO\_LocalDev\KSPRefs\KSPAssets.dll</HintPath>
+      <HintPath>..\_LocalDev\KSPRefs\KSPAssets.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="UnityEngine">
-      <HintPath>E:\Steam\steamapps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEngine.UI">
-      <HintPath>E:\Steam\steamapps\common\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.UI.dll</HintPath>
-      <HintPath>G:\GAMES\KERBAL\Kerbal Space Program_DEV_13\KSP_x64_Data\Managed\Assembly-CSharp.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="UnityEngine">
       <HintPath>D:\REPOSITORIO\_LocalDev\KSPRefs\UnityEngine.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>..\_LocalDev\KSPRefs\UnityEngine.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.UI">
       <HintPath>D:\REPOSITORIO\_LocalDev\KSPRefs\UnityEngine.UI.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>..\_LocalDev\KSPRefs\UnityEngine.UI.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DESettings.cs" />
-    <Compile Include="FlamingJoints.cs" />
-    <Compile Include="DEGaplessParticleEmitter.cs" />
-    <Compile Include="FlamingJointScript.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="DestructionEffects\BDAcheck.cs" />
+    <Compile Include="DestructionEffects\DEGaplessParticleEmitter.cs" />
+    <Compile Include="DestructionEffects\DESettings.cs" />
+    <Compile Include="DestructionEffects\FlamingJoints.cs" />
+    <Compile Include="DestructionEffects\FlamingJointScript.cs" />
+    <Compile Include="DestructionEffects\Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
@@ -123,7 +122,9 @@
     <Content Include="Distribution\GameData\DestructionEffects\Models\FlameEffect_Legacy\smoke.png" />
     <Content Include="Distribution\GameData\DestructionEffects\Plugins\DestructionEffects.dll" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
   <ItemGroup>
     <None Include="Distribution\GameData\DestructionEffects\DestructionEffects.version" />
     <None Include="Distribution\GameData\DestructionEffects\Models\FlameEffect2\model.mu" />
