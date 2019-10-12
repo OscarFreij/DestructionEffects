@@ -16,6 +16,8 @@ namespace DestructionEffects
         //private Vessel LastVesselLoaded = null;
         public static List<GameObject> FlameObjects = new List<GameObject>();             
         public List<Vessel> vesselsAllowed = new List<Vessel>();
+        // added dictionary to remember the parents of parts that are destroyed
+        public Dictionary<uint, uint> deadPartsParents = new Dictionary<uint, uint>();
         private static readonly string[] PartTypesTriggeringUnwantedJointBreakEvents = new string[]
         {
             "decoupler",
@@ -49,8 +51,29 @@ namespace DestructionEffects
         {
             GameEvents.onPhysicsEaseStop.Add(OnPhysicsEaseStop);
             GameEvents.onPartJointBreak.Add(OnPartJointBreak);
+            GameEvents.onPartWillDie.Add(OnPartWillDie);
+            GameEvents.onLevelWasLoadedGUIReady.Add(OnLevelLoaded);
             PartTypesTriggeringUnwantedJointBreakEvents.CopyTo(_PartTypesTriggeringUnwantedJointBreakEvents,0);
             DESettings.PartIgnoreList.CopyTo(_PartTypesTriggeringUnwantedJointBreakEvents, PartTypesTriggeringUnwantedJointBreakEvents.Length);
+        }
+
+        // this function was added as during this event the joints are still intact and we can remember the parent of the part that is going to die
+        public void OnPartWillDie(Part data)
+        {
+            if (!(data.localRoot == data))
+            {
+                deadPartsParents.Add(data.flightID, data.parent.flightID);
+            }
+            else
+            {
+                deadPartsParents.Add(data.flightID, data.flightID);
+            }
+        }
+
+        // this function was added to clear the list of dead parts when a scene is loaded
+        public void OnLevelLoaded(GameScenes data)
+        {
+            deadPartsParents.Clear();
         }
 
         public void OnPhysicsEaseStop(Vessel data)
@@ -85,15 +108,43 @@ namespace DestructionEffects
             {
                 return;
             }
-            if (breakForce == 0 && !BDACheck.bdaAvailable)
-                return;
 
-            AttachFlames(partJoint);
+            if (breakForce == 0)
+            {
+                // probably the BDa check is not required as I think the fix should work also in other situations
+                if (!BDACheck.bdaAvailable)
+                    return;
+
+                // this checks if the joint connects a parent and a child (other cases are autostruts that we do not want)
+                if (!(deadPartsParents.Contains(new KeyValuePair<uint, uint>(partJoint.Host.flightID, partJoint.Target.flightID)) || deadPartsParents.ContainsKey(partJoint.Target.flightID)))
+                {
+                    return;
+                }
+            }
+
+            // added this check because if a part dies that has a still intact child there will be 2 partjoint breaks one where the target that is destroyed and one where the host is destroyed
+            // also expanded attach flames with this new parameter (basically we avoid attaching flames to a destroyed object that could lead to exceptions
+            bool attachToHost = false;
+
+            if (deadPartsParents.ContainsKey(partJoint.Target.flightID))
+            {
+                attachToHost = true;
+            }
+
+            AttachFlames(partJoint, attachToHost);
         }
 
-        private static void AttachFlames(PartJoint partJoint)
+        private static void AttachFlames(PartJoint partJoint, bool attachToHost)
         {
             var modelUrl = DESettings.LegacyEffect ? LegacyFlameModelPath : NewFlameModelPath;
+
+            // adjusted the function with this new varaible that is either the hos or the target part depending on parameters (done to avoid attaching flames to a destroyed part)
+            Part flamingpart = partJoint.Target;
+
+            if (attachToHost)
+            {
+                flamingpart = partJoint.Host;
+            }
 
             var flameObject =
                 (GameObject)
@@ -103,7 +154,7 @@ namespace DestructionEffects
                         Quaternion.identity);
 
             flameObject.SetActive(true);
-            flameObject.transform.parent = partJoint.Target.transform;
+            flameObject.transform.parent = flamingpart.transform;
             flameObject.AddComponent<FlamingJointScript>();
 
             foreach (var pe in flameObject.GetComponentsInChildren<KSPParticleEmitter>())
@@ -111,7 +162,7 @@ namespace DestructionEffects
                 if (!pe.useWorldSpace) continue;
 
                 var gpe = pe.gameObject.AddComponent<DeGaplessParticleEmitter>();
-                gpe.Part = partJoint.Target;
+                gpe.Part = flamingpart;
                 gpe.Emit = true;
             }
         }
@@ -177,13 +228,19 @@ namespace DestructionEffects
             {
                 return true;
             }
-                
-            if (part.partInfo.title.Contains("Wing") ||
-                part.partInfo.title.Contains("Fuselage") ||
-                part.partInfo.title.Contains("Bow") ||
-                part.partInfo.title.Contains("Stern") ||
-                part.partInfo.title.Contains("Hull") ||
-                part.partInfo.title.Contains("Superstructure") ||
+
+            //added to lower case as in some parts the description is not uppercase in addition added some more parts that are like fuseslage (procedural structural, engine, cone, tail, cockpit)            
+            if (part.partInfo.title.ToLower().Contains("wing") ||
+                part.partInfo.title.ToLower().Contains("fuselage") ||
+                part.partInfo.title.ToLower().Contains("bow") ||
+                part.partInfo.title.ToLower().Contains("stern") ||
+                part.partInfo.title.ToLower().Contains("hull") ||
+                part.partInfo.title.ToLower().Contains("superstructure") ||
+                part.partInfo.title.ToLower().Contains("structural") ||
+                part.partInfo.title.ToLower().Contains("engine") ||
+                part.partInfo.title.ToLower().Contains("cone") ||
+                part.partInfo.title.ToLower().Contains("tail") ||
+                part.partInfo.title.ToLower().Contains("cockpit") ||
                 part.FindModuleImplementing<ModuleEngines>() != null ||
                 part.FindModuleImplementing<ModuleEnginesFX>() != null)/*|| part.partInfo.title.Contains("Turret") */
             {
