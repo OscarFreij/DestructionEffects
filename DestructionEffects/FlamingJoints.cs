@@ -62,11 +62,18 @@ namespace DestructionEffects
         {
             if (!(data.localRoot == data))
             {
-                deadPartsParents.Add(data.flightID, data.parent.flightID);
+                if (!deadPartsParents.ContainsKey(data.flightID))
+                {
+                    deadPartsParents.Add(data.flightID, data.parent.flightID);
+                }
+              
             }
             else
             {
-                deadPartsParents.Add(data.flightID, data.flightID);
+                if (!deadPartsParents.ContainsKey(data.flightID))
+                {
+                    deadPartsParents.Add(data.flightID, data.flightID);
+                }
             }
         }
 
